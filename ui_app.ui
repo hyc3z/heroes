@@ -15,7 +15,39 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="customedListWidget" name="listWidget_index"/>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>搜索</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_search"/>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QStackedWidget" name="stackedWidget">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <widget class="QWidget" name="page">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="customedListWidget" name="listWidget_index"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_2">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="modifiedTableWidget" name="tableWidget_winrate"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -24,6 +56,11 @@
    <class>customedListWidget</class>
    <extends>QListWidget</extends>
    <header>customedListWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>modifiedTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>modifiedTableWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

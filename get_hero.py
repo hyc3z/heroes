@@ -15,17 +15,23 @@ header = {
 
 def get_hero_detail(heroname:str, dump_to_py=True, dump_to_json=True, commit_to_db=False, get_img=True):
     retval = requests.get("http://api.maxjia.com/api/hero/detail/overview/?lang=zh-cn&game_type=dota2&name={}".format(heroname))
+    match_ups = requests.get("http://api.maxjia.com/api/hero/match_ups/?lang=zh-cn&game_type=dota2&hero={}".format(heroname))
     text = retval.text
+    match_ups_text = match_ups.text
     key_vals = json.loads(text)
+    key_match_ups = json.loads(match_ups_text)
     try:
         os.mkdir(os.path.join(output_dir, heroname))
     except FileExistsError:
         pass
     if dump_to_py:
         dumpDict2Py(key_vals, os.path.join(output_dir, heroname, "{}.py".format(heroname)), heroname)
+        dumpDict2Py(key_match_ups, os.path.join(output_dir, heroname, "{}_matchups.py".format(heroname)), heroname)
     if dump_to_json:
         with open(os.path.join(output_dir, heroname, "{}.json".format(heroname)), 'w+') as f:
             json.dump(key_vals, f)
+        with open(os.path.join(output_dir, heroname, "{}_matchups.json".format(heroname)), 'w+') as f:
+            json.dump(key_match_ups, f)
     if get_img:
         res = requests.get(key_vals['result']['hero_img'])
         res.raise_for_status()
@@ -55,15 +61,65 @@ def get_all_heros(get_detail=True, dump_to_py=True, dump_to_json=True, commit_to
             finished_count += 1
             print("{}/{} finished.".format(finished_count,heroes_count))
 
+
+def get_hero_info_local(heroname:str, source='json'):
+    if source == 'json':
+        with open(os.path.join(output_dir, heroname, "{}.json".format(heroname))) as f:
+            hero_data = json.load(f)
+        return hero_data
+
+
+def get_hero_matchups_data_local(heroname:str, source='json'):
+    if source == 'json':
+        with open(os.path.join(output_dir, heroname, "{}_matchups.json".format(heroname))) as f:
+            hero_data = json.load(f)
+        return hero_data
+
+def get_hero_matchups_data_local_precise(heroname:str):
+    data = get_hero_matchups_data_local(heroname)['result']
+    result = {}
+    for i in data:
+        result[i['hero_b_info']['img_name']] = [
+            i['enemy_match_count'],
+            i['enemy_match_ups'],
+            i['enemy_win_rate']
+        ]
+    result = sorted(result.items(), key=lambda x: float(x[1][1]))
+    return result
+
+def get_trans_dict():
+    heroes = os.listdir(output_dir)
+    hero_dict = {}
+    for hero in heroes:
+        info = get_hero_info_local(hero)
+        name_cn = info['result']['hero_base_info']['name']
+        hero_dict[name_cn] = hero
+        hero_dict[hero] = name_cn
+    return hero_dict
+
+
+def get_heroes_icons_local():
+    heroes = os.listdir(output_dir)
+    hero_icon_dict = {}
+    for hero in heroes:
+        info = get_hero_info_local(hero)
+        name_cn = info['result']['hero_base_info']['name']
+        icon = os.path.join(output_dir, hero, "{}.png".format(hero))
+        hero_icon_dict[name_cn] = icon
+    return hero_icon_dict
+
+
 def main():
-    get_all_heros(
-        get_detail=True,
-        dump_to_py=True,
-        dump_to_json=True,
-        commit_to_db=False,
-        get_img=True
-    )
+    # get_all_heros(
+    #     get_detail=True,
+    #     dump_to_py=True,
+    #     dump_to_json=True,
+    #     commit_to_db=False,
+    #     get_img=True
+    # )
     # get_hero_detail("axe")
+    get_hero_matchups_data_local_precise('axe')
+    # get_hero_winrate_opponent("axe")
 
 
 if __name__ == '__main__':
