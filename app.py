@@ -25,6 +25,7 @@ class AppMain(QDialog, Ui_app):
         self.pushButton_return.clicked.connect(self.return_index)
         self.stackedWidget.setCurrentIndex(0)
         self.init_table()
+        self.setWindowTitle("Dota helper v0.1")
         self.show()
 
     def init_table(self):
@@ -79,7 +80,7 @@ class AppMain(QDialog, Ui_app):
         else:
             result = {}
             for i in self.hero_dict.keys():
-                if keyword in i:
+                if keyword in i or keyword in self.translation[i]:
                     result[i] = self.hero_dict[i]
             self.show_heroes(result)
 
@@ -105,6 +106,7 @@ def main():
     # Ui
     mainwindow = AppMain()
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()

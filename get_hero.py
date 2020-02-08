@@ -108,18 +108,25 @@ def get_heroes_icons_local():
         hero_icon_dict[name_cn] = icon
     return hero_icon_dict
 
+def gen_heroes_aliases():
+    heroes = os.listdir(output_dir)
+    result = {}
+    for i in heroes:
+        result[i] = []
+    dumpDict2Py(result, "hero_aliases.py", "hero_aliases")
 
 def main():
-    # get_all_heros(
-    #     get_detail=True,
-    #     dump_to_py=True,
-    #     dump_to_json=True,
-    #     commit_to_db=False,
-    #     get_img=True
-    # )
+    get_all_heros(
+        get_detail=True,
+        dump_to_py=True,
+        dump_to_json=True,
+        commit_to_db=False,
+        get_img=True
+    )
     # get_hero_detail("axe")
-    get_hero_matchups_data_local_precise('axe')
+    # get_hero_matchups_data_local_precise('axe')
     # get_hero_winrate_opponent("axe")
+    # gen_heroes_aliases()
 
 
 if __name__ == '__main__':
